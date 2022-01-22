@@ -1,0 +1,26 @@
+# versionは3系が最新版で、versionによって書き方が異なる
+version: "3"
+services:
+  mybatis:
+    build: 
+      context: ./mybatis/
+    image: mybatis
+    container_name: mybatis
+    command: /bin/bash
+    tty: true
+    working_dir: "/mybatis"
+    volumes:
+      - ./mybatis:/mybatis:cached
+    depends_on:
+      - mysql
+
+  mysql:
+    platform: linux/x86_64 # M1チップ対応のため追記
+    build: ./mysql/    #Dockerfileからビルドすることを示す
+    volumes:
+      - ./mysql/db:/docker-entrypoint-initdb.d  #コンテナ作成時にsqlを実行する
+    image: original_mysql_world # イメージの名前
+    environment:
+      MYSQL_ROOT_PASSWORD: password   #コンテナ内のMySQLを起動する際のパスワードを設定
+    ports:
+      - "3306:3306"
